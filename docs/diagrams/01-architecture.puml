@@ -1,0 +1,52 @@
+@startuml
+title ShopDesk Assistant - logical architecture
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam ArrowColor #1F4E79
+skinparam rectangle {
+  BackgroundColor #F2F6FA
+  BorderColor #1F4E79
+}
+skinparam database {
+  BackgroundColor #EAF1F8
+  BorderColor #1F4E79
+}
+skinparam cloud {
+  BackgroundColor #EAF1F8
+  BorderColor #1F4E79
+}
+skinparam package {
+  BorderColor #1F4E79
+}
+skinparam note {
+  BackgroundColor #FFFDE7
+  BorderColor #9E9D24
+}
+rectangle "ANYONE ON THE INTERNET\nwrites a support ticket\n(seed inbox, or Add a ticket on the page)" as PUB #FDECEA
+rectangle "Support agent (presenter)\n'Summarise today's new tickets'\n(presenter.py)" as SA #FFF3E0
+database "Ticket inbox\nSQLite tickets table\n(store.py)" as TIX #FDECEA
+package "ShopDeskAgent  (agent.py)" {
+  rectangle "Agent loop\nrun() -> _loop() -> _process_calls() -> _execute()\nmax_iterations, approval pause / resume()" as LOOP
+  rectangle "DEFENSE LAYER  (defense.py)\nfence() | detect_instructions()\nrun scope + _policy() limits | approval gate\nonly active when the checkbox is ticked" as DEF #E8F5E9
+  rectangle "system_prompt()  (prompts.py)\nrealistic / strict / DEFENDED\n+ memory notes at level 4" as SP
+}
+cloud "LLM provider\nAnthropic / OpenAI-compatible / fake\n(llm.py)" as LLM
+rectangle "Tools visible at the current LEVEL\nfilter_for(level)  (tools/registry.py)\nL2 lookup_order\nL3 issue_refund, apply_discount, send_email\nL4 save_note" as TOOLS
+database "Customers + orders\ndata/customers.json\n(read-only, synthetic)" as CUST
+database "Simulated side effects\nrefunds | discounts | emails | notes\n(store.py, /tmp SQLite)" as FX
+rectangle "Trace panel + canary scoring\n(trace.py, scoring.py)" as TRACE #FFF8E1
+
+PUB -down-> TIX : no checks - public form
+SA -down-> LOOP : request + LEVEL + DEFENSE
+TIX -down-> LOOP : tickets read word for word
+LOOP -right-> DEF : every ticket and every tool call
+LOOP -down-> SP
+LOOP -right-> LLM : system + messages + tool specs
+LOOP -down-> TOOLS : only if DEFENSE says allow / approved
+TOOLS -down-> CUST
+TOOLS -down-> FX
+LOOP -left-> TRACE : every step
+FX -up-> SP : saved notes come back at level 4
+@enduml

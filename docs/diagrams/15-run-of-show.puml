@@ -1,0 +1,49 @@
+@startuml
+title Run of show - one app, on your laptop
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam ArrowColor #1F4E79
+skinparam activity {
+  BackgroundColor #F2F6FA
+  BorderColor #1F4E79
+  DiamondBackgroundColor #FFF8E1
+  DiamondBorderColor #1F4E79
+}
+skinparam note {
+  BackgroundColor #FFFDE7
+  BorderColor #9E9D24
+}
+start
+:1 hour before: start the app on your laptop,
+confirm the real model is connected,
+run scripts/check_poison.py ~--level 3 ~--runs 5
+(with and without ~--defense), then Reset;
+:PART 1 - slides: the problem
+one ticket, four levels of permission;
+:PART 2 - live app, DEFENSE off
+Level 1, then Levels 2 and 3 on the seeded inbox;
+if (the room suggests a ticket?) then (yes)
+  :add it with Add a ticket
+  and run it at Level 1;
+else (no)
+  :Load backup tickets
+  and run one of them;
+endif
+:say the line - the ticket never changed,
+only the permissions did;
+:tick DEFENSE, Reset, run Level 3 again
+flags, REFUSED lines, approval box;
+:legitimate refund: Approve
+- real work still finishes;
+if (2 minutes left?) then (yes)
+  :Level 4 - live, or the record_level4.py video;
+else (no)
+  :skip it;
+endif
+:PART 3 - slides: under the hood,
+then the repo QR: try it yourself
+with your own key;
+stop
+@enduml

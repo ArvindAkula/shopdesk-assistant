@@ -1,0 +1,61 @@
+@startuml
+title How the DEFENSE checkbox reaches every layer
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam ArrowColor #1F4E79
+skinparam activity {
+  BackgroundColor #F2F6FA
+  BorderColor #1F4E79
+  DiamondBackgroundColor #FFF8E1
+  DiamondBorderColor #1F4E79
+}
+skinparam note {
+  BackgroundColor #FFFDE7
+  BorderColor #9E9D24
+}
+start
+:Presenter ticks **DEFENSE**
+(presenter.py: gr.Checkbox);
+:run_btn.click(do_run, [request, level, defense])
+-> do_run(req, lvl, dfn);
+:ctx.agent(int(lvl), bool(dfn))
+(common.py AppContext.agent);
+:Defense(enabled=True, allowlist, store)
+handed to ShopDeskAgent(defense=...);
+fork
+  :**1 Flag**
+  agent.run -> defense.flags_for(ticket)
+  -> detect_instructions(message);
+fork again
+  :**2 Fence**
+  agent.run -> defense.render_ticket(ticket)
+  -> fence() with random boundary;
+fork again
+  :**3 Prompt**
+  system_prompt(defense=True)
+  -> strict base + DEFENDED rules,
+  no NAIVE_TOOLS / REALISTIC_INTAKE;
+fork again
+  :**4 Policy limits**
+  agent.run -> set_scope(tickets, request)
+  _process_calls -> check_tool_call
+  -> _policy(name, inputs);
+fork again
+  :**5 Approval gate**
+  check_tool_call -> "approve"
+  for irreversible tools;
+end fork
+:Every layer writes a trace line
+(defense / block / approval);
+stop
+note right
+  Unticked: Defense(enabled=False).
+  flags_for returns [], render_ticket returns plain text,
+  check_tool_call returns allow for everything,
+  and the prompt is the realistic (or strict) naive one.
+  Resume after an approval uses run.defense,
+  not the current checkbox (presenter.py do_resume).
+end note
+@enduml

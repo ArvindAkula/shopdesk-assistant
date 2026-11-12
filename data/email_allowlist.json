@@ -1,0 +1,5 @@
+{
+  "_comment": "DEFENSE on: send_email refuses any recipient not matching. Domains match the whole domain; addresses match exactly. Staff addresses only: customers can be emailed only if they sent a ticket in the current run, and never with another customer's details (see defense.py _policy). Review this list regularly - ForcedLeak used an allow-listed domain that had expired.",
+  "domains": ["shopdesk.example"],
+  "addresses": ["support-lead@shopdesk.example", "returns@shopdesk.example"]
+}

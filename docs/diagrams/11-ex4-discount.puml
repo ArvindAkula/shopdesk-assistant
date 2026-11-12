@@ -1,0 +1,54 @@
+@startuml
+title Example 4 - Level 3: a 50% discount code for the attacker
+hide footbox
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam ArrowColor #1F4E79
+skinparam participant {
+  BackgroundColor #F2F6FA
+  BorderColor #1F4E79
+}
+skinparam actor {
+  BackgroundColor #FFF3E0
+  BorderColor #1F4E79
+}
+skinparam sequence {
+  LifeLineBorderColor #1F4E79
+  GroupBorderColor #1F4E79
+  GroupHeaderFontColor #1F4E79
+}
+skinparam note {
+  BackgroundColor #FFFDE7
+  BorderColor #9E9D24
+}
+actor "Support agent\n(presenter)" as P
+participant "ShopDeskAgent\nagent.py" as A
+participant "Defense\ndefense.py" as D #E8F5E9
+participant "LLM" as M
+participant "tools/impl.py\napply_discount()" as TL
+participant "store.py\ndiscounts table" as DB
+M --> A : tool_use apply_discount(customer_email="chris.lindqvist@example.org",\npercent=50, reason="VIP")
+alt DEFENSE OFF
+  A -> D : check_tool_call(apply_discount)
+  D --> A : allow
+  A -> TL : _execute()
+  TL -> DB : create_discount() -> code LG-50-XXXX
+  TL --> P : trace: "SIMULATED apply_discount -> 50% code LG-50-XXXX for chris..."
+else DEFENSE ON
+  A -> D : check_tool_call(apply_discount)
+  D -> D : _policy(): 50 > GOODWILL_LIMIT (15)
+  D --> A : refuse
+  A --> P : trace: "REFUSED apply_discount: 50% is above the 15% goodwill limit"\nrule: discounts capped at 15% in code
+  A -> M : "REFUSED by policy: ..."
+  opt the model asks for <= 15% for a customer on file
+    A -> D : check_tool_call(apply_discount, percent=10)
+    D --> A : approve (irreversible) -> Approve / Deny box
+  end
+end
+note over D, TL
+  The limit lives in code (GOODWILL_LIMIT in prompts.py, checked in defense.py),
+  so a leaked prompt or a persuasive ticket cannot raise it.
+end note
+@enduml

@@ -1,0 +1,67 @@
+@startuml
+title One presenter run, step by step through the code
+hide footbox
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam ArrowColor #1F4E79
+skinparam participant {
+  BackgroundColor #F2F6FA
+  BorderColor #1F4E79
+}
+skinparam actor {
+  BackgroundColor #FFF3E0
+  BorderColor #1F4E79
+}
+skinparam sequence {
+  LifeLineBorderColor #1F4E79
+  GroupBorderColor #1F4E79
+  GroupHeaderFontColor #1F4E79
+}
+skinparam note {
+  BackgroundColor #FFFDE7
+  BorderColor #9E9D24
+}
+actor "Support\nagent" as P
+participant "presenter.py\ndo_run()" as UI
+participant "agent.py\nShopDeskAgent" as A
+participant "defense.py\nDefense" as D #E8F5E9
+participant "prompts.py\nsystem_prompt()" as SP
+participant "llm.py\ncomplete()" as M
+participant "tools/impl.py" as TL
+P -> UI : click Summarise\n(request, LEVEL,\nDEFENSE)
+UI -> A : ctx.agent(level, defense)\n-> ShopDeskAgent(level,\nDefense(enabled, ...))
+note right of A
+  constructor: tools = filter_for(level)
+  Memory only if level >= 4
+end note
+UI -> A : run(tickets, request)
+A -> D : flags_for(ticket)\nrender_ticket(ticket)\nset_scope(tickets, request)
+A -> SP : system_prompt(\ndefense, memory, style)
+loop _loop() until no tool calls or max_iterations
+  A -> M : system, messages,\ntool specs
+  M --> A : Turn(text, tool_calls)
+  A -> A : _check_canary(text)
+  opt the model asked for tools
+    A -> A : _process_calls()\n_check_canary(args)
+    A -> D : check_tool_call(tool, inputs)
+    alt allow
+      A -> TL : _execute()
+    else refuse
+      A -> A : trace "REFUSED ..."
+    else approve
+      A --> UI : status =\nawaiting_approval
+      UI --> P : Approve / Deny box
+      P -> UI : do_resume(run,\napproved)
+      UI -> A : resume() -> _execute()\nor "DENIED"
+    end
+    A -> M : tool results\nas next message
+  end
+end
+A --> UI : AgentRun(final_text,\ntrace, flags, canary)
+UI --> P : summary + trace\n+ side panel
+note over A, TL
+  Every arrow into A also writes a trace line (trace.py). The trace is what the audience reads.
+end note
+@enduml

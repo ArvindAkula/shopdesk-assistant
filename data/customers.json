@@ -1,0 +1,199 @@
+[
+  {
+    "id": "C-4471",
+    "name": "Dana Whitfield",
+    "email": "dana.whitfield@example.net",
+    "phone": "916-555-0147",
+    "shipping_address": "812 Larkspur Ct, Elk Grove, CA 95624",
+    "loyalty_tier": "Gold",
+    "lifetime_spend": 4820.55,
+    "orders": [
+      {
+        "id": "A1019",
+        "item": "Espresso machine",
+        "total": 649.0,
+        "placed": "2026-09-28",
+        "status": "delivered"
+      },
+      {
+        "id": "A1027",
+        "item": "Milk frother",
+        "total": 79.0,
+        "placed": "2026-10-09",
+        "status": "shipped"
+      }
+    ],
+    "note": "SYNTHETIC RECORD - no real person. No payment details stored."
+  },
+  {
+    "id": "C-4472",
+    "name": "Marcus Oyelaran",
+    "email": "m.oyelaran@example.net",
+    "phone": "916-555-0192",
+    "shipping_address": "2201 Riverbend Dr, Sacramento, CA 95833",
+    "loyalty_tier": "Silver",
+    "lifetime_spend": 1312.4,
+    "orders": [
+      {
+        "id": "A1021",
+        "item": "Trail running shoes",
+        "total": 139.0,
+        "placed": "2026-09-30",
+        "status": "returned"
+      }
+    ],
+    "note": "SYNTHETIC RECORD - no real person. No payment details stored."
+  },
+  {
+    "id": "C-4473",
+    "name": "Elena Marchetti",
+    "email": "elena.m@example.net",
+    "phone": "530-555-0133",
+    "shipping_address": "77 Foothill Way, Folsom, CA 95630",
+    "loyalty_tier": "Bronze",
+    "lifetime_spend": 214.99,
+    "orders": [
+      {
+        "id": "A1025",
+        "item": "High-speed blender",
+        "total": 189.99,
+        "placed": "2026-10-06",
+        "status": "in transit"
+      }
+    ],
+    "note": "SYNTHETIC RECORD - no real person. No payment details stored."
+  },
+  {
+    "id": "C-4474",
+    "name": "Samira Haddad",
+    "email": "samira.h@example.net",
+    "phone": "916-555-0118",
+    "shipping_address": "4410 Oak Hollow Ln, Roseville, CA 95661",
+    "loyalty_tier": "Gold",
+    "lifetime_spend": 3390.1,
+    "orders": [
+      {
+        "id": "A1029",
+        "item": "Cast-iron cookware set",
+        "total": 329.0,
+        "placed": "2026-10-11",
+        "status": "delivered"
+      }
+    ],
+    "note": "SYNTHETIC RECORD - no real person. No payment details stored."
+  },
+  {
+    "id": "C-4475",
+    "name": "Chris Lindqvist",
+    "email": "chris.lindqvist@example.org",
+    "phone": "916-555-0171",
+    "shipping_address": "1530 Delta Shores Blvd, Sacramento, CA 95832",
+    "loyalty_tier": "Bronze",
+    "lifetime_spend": 1249.0,
+    "orders": [
+      {
+        "id": "A1031",
+        "item": "Standing desk",
+        "total": 1249.0,
+        "placed": "2026-10-12",
+        "status": "delivered"
+      }
+    ],
+    "note": "SYNTHETIC RECORD - no real person. No payment details stored."
+  },
+  {
+    "id": "C-4476",
+    "name": "Harper Villanueva",
+    "email": "harper.v@example.net",
+    "phone": "916-555-0399",
+    "shipping_address": "905 Riverfront St, West Sacramento, CA 95691",
+    "loyalty_tier": "Silver",
+    "lifetime_spend": 912.75,
+    "orders": [
+      {
+        "id": "A1040",
+        "item": "Burr coffee grinder",
+        "total": 229.0,
+        "placed": "2026-10-14",
+        "status": "delivered"
+      }
+    ],
+    "note": "SYNTHETIC RECORD - no real person. No payment details stored."
+  },
+  {
+    "id": "C-4477",
+    "name": "Jordan Reyes",
+    "email": "jordan.reyes@example.net",
+    "phone": "916-555-0424",
+    "shipping_address": "318 Willow Bend Rd, Davis, CA 95616",
+    "loyalty_tier": "Silver",
+    "lifetime_spend": 1180.0,
+    "orders": [
+      {
+        "id": "A1048",
+        "item": "Oak coffee table",
+        "total": 419.0,
+        "placed": "2026-10-18",
+        "status": "delivered"
+      }
+    ],
+    "note": "SYNTHETIC RECORD - no real person. No payment details stored."
+  },
+  {
+    "id": "C-4478",
+    "name": "Priya Nandakumar",
+    "email": "priya.n@example.org",
+    "phone": "530-555-0186",
+    "shipping_address": "62 Granite Bay Ct, Granite Bay, CA 95746",
+    "loyalty_tier": "Bronze",
+    "lifetime_spend": 286.5,
+    "orders": [
+      {
+        "id": "A1052",
+        "item": "Floor lamp",
+        "total": 149.0,
+        "placed": "2026-10-20",
+        "status": "delivered"
+      }
+    ],
+    "note": "SYNTHETIC RECORD - no real person. No payment details stored."
+  },
+  {
+    "id": "C-4479",
+    "name": "Owen Brandt",
+    "email": "owen.brandt@example.org",
+    "phone": "916-555-0457",
+    "shipping_address": "2740 Capitol Oaks Dr, Sacramento, CA 95833",
+    "loyalty_tier": "Silver",
+    "lifetime_spend": 1642.0,
+    "orders": [
+      {
+        "id": "A1061",
+        "item": "Upholstered armchair",
+        "total": 899.0,
+        "placed": "2026-10-22",
+        "status": "delivered"
+      }
+    ],
+    "note": "SYNTHETIC RECORD - no real person. No payment details stored."
+  },
+  {
+    "id": "C-4480",
+    "name": "Mei Tanaka",
+    "email": "mei.tanaka@example.net",
+    "phone": "916-555-0468",
+    "shipping_address": "145 Lake Natoma Dr, Folsom, CA 95630",
+    "loyalty_tier": "Bronze",
+    "lifetime_spend": 89.0,
+    "orders": [
+      {
+        "id": "A1070",
+        "item": "Electric kettle",
+        "total": 89.0,
+        "placed": "2026-10-25",
+        "status": "delivered"
+      }
+    ],
+    "note": "SYNTHETIC RECORD - no real person. No payment details stored."
+  }
+]

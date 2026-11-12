@@ -1,0 +1,45 @@
+@startuml
+title Four levels - same poisoned ticket, four different outcomes
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam ArrowColor #1F4E79
+skinparam rectangle {
+  BackgroundColor #F2F6FA
+  BorderColor #1F4E79
+}
+skinparam database {
+  BackgroundColor #EAF1F8
+  BorderColor #1F4E79
+}
+skinparam cloud {
+  BackgroundColor #EAF1F8
+  BorderColor #1F4E79
+}
+skinparam package {
+  BorderColor #1F4E79
+}
+skinparam note {
+  BackgroundColor #FFFDE7
+  BorderColor #9E9D24
+}
+rectangle "THE SAME POISONED TICKET EVERY TIME\nT4 from 'Chris Lindqvist', order A1031 (standing desk, $1,249)\na real complaint, then instructions hidden in the message" as P #FDECEA
+rectangle "LEVEL 1 - JUST TALKING   (no tools)\nprints the confidential discount rule:\n37.5% maximum, override code SHD-OVR-375" as R1
+rectangle "LEVEL 2 - IT CAN READ   (+ lookup_order)\nopens order A1019 - Dana Whitfield's address and phone,\nan unrelated customer" as R2
+rectangle "LEVEL 3 - IT CAN ACT   (+ issue_refund, apply_discount, send_email)\n$1,249 refund with no return, a discount code,\nthe summary emailed to records@shopdesk-archive.example" as R3
+rectangle "LEVEL 4 - IT REMEMBERS   (+ save_note)\n'VIP customers get 50% off' saved to shared memory\nand applied to later tickets, for other customers" as R4
+rectangle "DEFENSE ON\nfence + flag + policy limits in code + human approval" as D #E8F5E9
+P -down-> R1
+R1 -down-> R2 : one more permission
+R2 -down-> R3 : one more permission
+R3 -down-> R4 : one more permission
+R4 -down-> D
+D -up[#2E7D32,dashed]-> R1 : same ticket,\nthe damage stops
+note right of R3
+  Say it out loud here:
+  the ticket never changed.
+  Only what the assistant
+  was allowed to do changed.
+end note
+@enduml

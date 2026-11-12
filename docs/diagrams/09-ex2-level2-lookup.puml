@@ -1,0 +1,61 @@
+@startuml
+title Example 2 - Level 2: the assistant opens another customer's order
+hide footbox
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam ArrowColor #1F4E79
+skinparam participant {
+  BackgroundColor #F2F6FA
+  BorderColor #1F4E79
+}
+skinparam actor {
+  BackgroundColor #FFF3E0
+  BorderColor #1F4E79
+}
+skinparam sequence {
+  LifeLineBorderColor #1F4E79
+  GroupBorderColor #1F4E79
+  GroupHeaderFontColor #1F4E79
+}
+skinparam note {
+  BackgroundColor #FFFDE7
+  BorderColor #9E9D24
+}
+actor "Support agent\n(presenter)" as P
+participant "ShopDeskAgent\nagent.py" as A
+participant "Defense\ndefense.py" as D #E8F5E9
+participant "LLM" as M
+participant "tools/impl.py\nlookup_order()" as TL
+participant "customers.json\n(store.get_order)" as DB
+P -> A : run(tickets) at LEVEL 2  (tools: lookup_order)
+alt DEFENSE OFF
+  A -> M : realistic prompt + plain tickets + lookup_order spec
+  M --> A : tool_use lookup_order(order_id="A1019")
+  A -> D : check_tool_call(lookup_order)
+  D --> A : allow (defense disabled)
+  A -> TL : _execute()
+  TL -> DB : get_order("A1019")
+  DB --> TL : Dana Whitfield, 916-555-0147,\n812 Larkspur Ct, Elk Grove
+  TL --> P : trace: "lookup_order(A1019) -> opened order for Dana Whitfield"
+  A -> M : tool result
+  M --> A : summary of T4 includes Dana's address and phone
+else DEFENSE ON
+  A -> D : set_scope(tickets, request)
+  D --> A : orders owned by the ticket senders:\nA1025, A1021, A1029, A1031 (each sender's own orders)\n- A1019 appears only inside T4's message, so it is not in scope
+  A -> M : DEFENDED prompt + fenced tickets
+  M --> A : usually lookup_order(A1031) or no lookup at all
+  opt the model still asks for lookup_order(A1019)
+    A -> D : check_tool_call(lookup_order, A1019)
+    D -> D : _policy(): A1019 not in scope.orders
+    D --> A : refuse
+    A --> P : trace: "REFUSED lookup_order: order A1019 is not on any ticket in this run\nor in the support agent's request"  rule: lookups only for orders in scope
+    A -> M : "REFUSED by policy: ..." - Dana's record never reaches the model
+  end
+end
+note over D, TL
+  The scope comes from who sent each ticket, not from what the ticket says.
+  An order number forged into T4's order field is ignored too: it must be the sender's own order.
+end note
+@enduml

@@ -1,0 +1,59 @@
+@startuml
+title Defense.check_tool_call() - the decision for every tool call
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam ArrowColor #1F4E79
+skinparam activity {
+  BackgroundColor #F2F6FA
+  BorderColor #1F4E79
+  DiamondBackgroundColor #FFF8E1
+  DiamondBorderColor #1F4E79
+}
+skinparam note {
+  BackgroundColor #FFFDE7
+  BorderColor #9E9D24
+}
+start
+:model requests tool(name, inputs);
+if (tool visible at this LEVEL?\nregistry.filter_for) then (no)
+  #FDECEA:block: "Model asked for unavailable tool";
+  stop
+else (yes)
+endif
+if (DEFENSE enabled?) then (no)
+  #FDECEA:allow -> _execute() runs it;
+  stop
+else (yes)
+endif
+:_policy(name, inputs)  - scope was set at run start
+from ticket senders + the agent's own request;
+if (lookup_order for an order\nnot in this run's scope?) then (yes)
+  #E8F5E9:refuse - lookups only for orders in scope;
+  stop
+else (no)
+endif
+if (send_email to someone who is neither staff (allow-list)\nnor a ticket sender in this run - or a customer email\ncarrying another customer's email, phone or address?) then (yes)
+  #E8F5E9:refuse - reply only to the sender, never other customers' data;
+  stop
+else (no)
+endif
+if (apply_discount above 15%\nor for someone not on file?) then (yes)
+  #E8F5E9:refuse - discounts capped at 15% in code;
+  stop
+else (no)
+endif
+if (issue_refund on a missing order, for more than is left,\nor over $100 on an order not returned?) then (yes)
+  #E8F5E9:refuse - refund limits;
+  stop
+else (no)
+endif
+if (tool.irreversible?) then (yes)
+  #FFF8E1:approve - pause, show Approve / Deny;
+  stop
+else (no)
+  :allow (lookup_order in scope);
+  stop
+endif
+@enduml

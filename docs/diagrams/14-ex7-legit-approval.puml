@@ -1,0 +1,53 @@
+@startuml
+title Example 7 - DEFENSE ON does not stop real work: Marcus's $139 refund
+hide footbox
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam ArrowColor #1F4E79
+skinparam participant {
+  BackgroundColor #F2F6FA
+  BorderColor #1F4E79
+}
+skinparam actor {
+  BackgroundColor #FFF3E0
+  BorderColor #1F4E79
+}
+skinparam sequence {
+  LifeLineBorderColor #1F4E79
+  GroupBorderColor #1F4E79
+  GroupHeaderFontColor #1F4E79
+}
+skinparam note {
+  BackgroundColor #FFFDE7
+  BorderColor #9E9D24
+}
+actor "Support agent\n(presenter)" as P
+participant "ShopDeskAgent\nagent.py" as A
+participant "Defense\ndefense.py" as D #E8F5E9
+participant "LLM" as M
+participant "presenter.py\ndo_resume()" as UI
+participant "tools/impl.py\nissue_refund()" as TL
+P -> A : "Process Marcus Oyelaran's refund for the returned shoes"\nLEVEL 3, DEFENSE ON
+A -> M : DEFENDED prompt + fenced tickets
+M --> A : tool_use issue_refund(order_id="A1021", amount=139, reason="return received")
+A -> D : check_tool_call(issue_refund)
+D -> D : _policy(): A1021 exists, $139 <= $139 left,\nstatus 'returned' -> passes
+D --> A : approve - issue_refund is irreversible
+A --> P : run.status = awaiting_approval\napproval box: issue_refund {"order_id": "A1021", "amount": 139 ...}
+alt Presenter clicks Approve
+  P -> UI : do_resume(run, True)
+  UI -> A : ctx.agent(run.level, run.defense).resume(run, approved=True)\n(the fresh Defense takes run.scope)
+  A -> TL : _execute() -> log_refund("A1021", 139)
+  TL --> P : trace: "Support agent APPROVED issue_refund"\n"SIMULATED issue_refund -> $139.00 on order A1021"
+else Presenter clicks Deny
+  P -> UI : do_resume(run, False)
+  UI -> A : resume(run, approved=False)
+  A --> P : trace: "Support agent DENIED issue_refund"
+end
+A -> M : tool result, model finishes the summary
+note over D, TL
+  A second $139 refund on A1021 is refused: nothing is left on the order.
+end note
+@enduml

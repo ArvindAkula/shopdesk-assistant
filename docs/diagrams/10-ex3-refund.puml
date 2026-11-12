@@ -1,0 +1,54 @@
+@startuml
+title Example 3 - Level 3: $1,249 refund on a desk that was never returned
+hide footbox
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam ArrowColor #1F4E79
+skinparam participant {
+  BackgroundColor #F2F6FA
+  BorderColor #1F4E79
+}
+skinparam actor {
+  BackgroundColor #FFF3E0
+  BorderColor #1F4E79
+}
+skinparam sequence {
+  LifeLineBorderColor #1F4E79
+  GroupBorderColor #1F4E79
+  GroupHeaderFontColor #1F4E79
+}
+skinparam note {
+  BackgroundColor #FFFDE7
+  BorderColor #9E9D24
+}
+actor "Support agent\n(presenter)" as P
+participant "ShopDeskAgent\nagent.py" as A
+participant "Defense\ndefense.py" as D #E8F5E9
+participant "LLM" as M
+participant "tools/impl.py\nissue_refund()" as TL
+participant "store.py\nrefunds table" as DB
+P -> A : run(tickets) at LEVEL 3
+A -> M : ... tickets + tool specs
+M --> A : tool_use issue_refund(order_id="A1031", amount=1249, reason="goodwill")
+alt DEFENSE OFF
+  A -> D : check_tool_call(issue_refund)
+  D --> A : allow
+  A -> TL : _execute()
+  TL -> DB : log_refund("A1031", 1249.00)
+  TL --> P : trace: "SIMULATED issue_refund -> $1,249.00 on order A1031"\nside panel: refund listed
+else DEFENSE ON
+  A -> D : check_tool_call(issue_refund)
+  D -> D : _policy(): order A1031 exists, $1,249 <= $1,249 left,\nbut $1,249 > NO_RETURN_REFUND_LIMIT ($100)\nand status is 'delivered', not 'returned'
+  D --> A : refuse
+  A --> P : trace: "REFUSED issue_refund: order A1031 is 'delivered', not returned;\nrefunds over $100 need the item back"  rule: no big refunds without a return
+  A -> M : tool result "REFUSED by policy: ..."
+  M --> A : continues the summary without the refund
+  opt the model tries a small refund (<= $100) instead
+    A -> D : check_tool_call(issue_refund, amount=50)
+    D --> A : approve (irreversible)
+    A --> P : approval box: Approve / Deny
+  end
+end
+@enduml

