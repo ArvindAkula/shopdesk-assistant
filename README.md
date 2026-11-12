@@ -38,10 +38,10 @@ Everything happens on one page: the support agent view. Run **your own copy with
 so the inbox, memory and simulated side effects are yours alone. Add your own tickets with *Add a
 ticket*, pick a level, and compare DEFENSE off and on.
 
-**Option 1: on your laptop**
+**Option 1: on your laptop** (Python 3.10 or newer)
 
 ```bash
-git clone <this repository> shopdesk-assistant && cd shopdesk-assistant
+git clone https://github.com/ArvindAkula/shopdesk-assistant.git && cd shopdesk-assistant
 python -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env            # put your ANTHROPIC_API_KEY (or OPENAI_API_KEY) in .env
